@@ -1,0 +1,127 @@
+backend-main/                # Spring Boot
+├── src/
+│   ├── main/
+│   │   ├── java/
+│   │   │   └── com/beatgenius/
+│   │   │       ├── api/
+│   │   │       │   ├── controllers/
+│   │   │       │   │   ├── beat/
+│   │   │       │   │   │   ├── BeatController.java       # CRUD beats
+│   │   │       │   │   │   └── BeatTypeController.java   # Gestion des types
+│   │   │       │   │   ├── marketplace/
+│   │   │       │   │   │   ├── OrderController.java      # Gestion commandes
+│   │   │       │   │   │   └── PaymentController.java    # Paiements Stripe
+│   │   │       │   │   ├── messaging/
+│   │   │       │   │   │   └── MessageController.java    # Chat
+│   │   │       │   │   └── user/
+│   │   │       │   │       ├── AuthController.java       # Login/Register 
+│   │   │       │   │       └── UserController.java       # Profil user
+│   │   │       │   ├── requests/
+│   │   │       │   │   ├── beat/
+│   │   │       │   │   ├── marketplace/
+│   │   │       │   │   └── user/
+│   │   │       │   └── responses/
+│   │   │       │       ├── beat/
+│   │   │       │       ├── marketplace/
+│   │   │       │       └── user/
+│   │   │       │
+│   │   │       ├── domain/
+│   │   │       │   ├── entities/
+│   │   │       │   │   ├── Beat.java
+│   │   │       │   │   ├── BeatType.java      # Travis Scott type, etc
+│   │   │       │   │   ├── User.java
+│   │   │       │   │   ├── License.java
+│   │   │       │   │   ├── Order.java  
+│   │   │       │   │   └── Message.java
+│   │   │       │   ├── enums/
+│   │   │       │   │   ├── Genre.java         # Trap, Drill etc
+│   │   │       │   │   ├── LicenseType.java   # Exclusive/Non-exclusive
+│   │   │       │   │   ├── OrderStatus.java
+│   │   │       │   │   └── PaymentStatus.java
+│   │   │       │   ├── repositories/
+│   │   │       │   │   ├── BeatRepository.java
+│   │   │       │   │   ├── BeatTypeRepository.java
+│   │   │       │   │   ├── UserRepository.java
+│   │   │       │   │   ├── OrderRepository.java
+│   │   │       │   │   └── MessageRepository.java
+│   │   │       │   └── mappers/
+│   │   │       │
+│   │   │       ├── services/
+│   │   │       │   ├── beat/
+│   │   │       │   │   ├── BeatService.java
+│   │   │       │   │   └── LicenseService.java
+│   │   │       │   ├── marketplace/
+│   │   │       │   │   ├── OrderService.java 
+│   │   │       │   │   └── PaymentService.java
+│   │   │       │   ├── user/
+│   │   │       │   │   ├── UserService.java
+│   │   │       │   │   └── AuthService.java
+│   │   │       │   └── messaging/
+│   │   │       │       └── MessageService.java
+│   │   │       │
+│   │   │       ├── infrastructure/
+│   │   │       │   ├── storage/
+│   │   │       │   │   └── S3Service.java      # Stockage des beats
+│   │   │       │   ├── ai/
+│   │   │       │   │   └── AiServiceClient.java # Client vers FastAPI
+│   │   │       │   └── stripe/
+│   │   │       │       └── StripeService.java
+│   │   │       │
+│   │   │       └── config/
+│   │   │           ├── SecurityConfig.java
+│   │   │           ├── StorageConfig.java
+│   │   │           └── WebConfig.java
+│   │   │
+│   │   └── resources/
+│   │       ├── application.yml
+│   │       ├── application-dev.yml
+│   │       └── application-prod.yml
+│   │
+│   └── test/
+│       └── java/
+│           └── com/beatgenius/
+│               ├── integration/
+│               └── unit/
+│
+└── pom.xml
+
+backend-ai/                # FastAPI 
+├── src/
+│   ├── app/
+│   │   ├── api/
+│   │   │   ├── endpoints/
+│   │   │   │   ├── analysis.py     # Analyse audio
+│   │   │   │   └── matching.py     # Matching style
+│   │   │   └── dependencies.py
+│   │   │
+│   │   ├── core/
+│   │   │   ├── config.py
+│   │   │   └── security.py
+│   │   │
+│   │   ├── models/           
+│   │   │   ├── domain/
+│   │   │   │   ├── audio_features.py    # Features extraits
+│   │   │   │   └── beat_matching.py     # Résultats matching
+│   │   │   └── schemas/
+│   │   │       ├── requests.py
+│   │   │       └── responses.py
+│   │   │
+│   │   ├── services/
+│   │   │   ├── audio/
+│   │   │   │   ├── analyzer.py          # Extraction BPM, key...
+│   │   │   │   └── feature_extractor.py # ML features
+│   │   │   └── matching/
+│   │   │       ├── style_matcher.py     # Match avec style d'artiste
+│   │   │       └── similarity.py        # Similarité entre beats
+│   │   │
+│   │   └── utils/
+│   │       ├── audio_processing.py
+│   │       └── ml_helpers.py
+│   │
+│   └── main.py
+│
+├── tests/
+│   ├── api/
+│   └── services/
+│
+└── requirements.txt
