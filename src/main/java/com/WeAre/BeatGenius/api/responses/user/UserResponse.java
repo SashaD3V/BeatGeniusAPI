@@ -1,5 +1,6 @@
 package com.WeAre.BeatGenius.api.responses.user;
 
+import com.WeAre.BeatGenius.domain.enums.UserRole;
 import lombok.Data;
 
 @Data
@@ -8,5 +9,5 @@ public class UserResponse {
     private String email;
     private String artistName;
     private String profilePicture;
-    // On n'inclut pas le password dans la response pour des raisons de sécurité
+    private UserRole role;  // Ajout du rôle dans la response
 }

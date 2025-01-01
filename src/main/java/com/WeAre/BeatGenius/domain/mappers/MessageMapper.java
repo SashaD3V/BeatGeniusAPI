@@ -8,15 +8,14 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
-@Mapper(componentModel = "spring", uses = {UserMapper.class})
+@Mapper(componentModel = "spring")
 public interface MessageMapper {
     @Mapping(target = "id", ignore = true)
-    @Mapping(target = "sender", ignore = true)
-    @Mapping(target = "sentAt", ignore = true)
-    @Mapping(target = "read", constant = "false")
+    @Mapping(target = "sender", ignore = true)  // On l'assignera dans le service
+    @Mapping(target = "recipient", ignore = true)  // On l'assignera dans le service
+    @Mapping(target = "sentAt", expression = "java(java.time.LocalDateTime.now())")
+    @Mapping(target = "read", constant = "false")  // Message non lu par défaut
     Message toEntity(CreateMessageRequest request);
 
-    void updateEntityFromDto(UpdateMessageRequest request, @MappingTarget Message message);
-
-    MessageResponse toDto(Message message);
+    MessageResponse toResponse(Message message);
 }

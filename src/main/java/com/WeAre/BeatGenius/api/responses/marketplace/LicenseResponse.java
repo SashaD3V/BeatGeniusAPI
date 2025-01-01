@@ -12,5 +12,4 @@ public class LicenseResponse {
     private BigDecimal price;
     private String rights;
     private Long beatId;
-    // Eventuellement des infos basiques sur le beat associé
 }
