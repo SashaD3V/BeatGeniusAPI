@@ -1,7 +1,7 @@
 package com.WeAre.BeatGenius.services.marketplace.impl;
 
-import com.WeAre.BeatGenius.api.requests.marketplace.CreateOrderRequest;
-import com.WeAre.BeatGenius.api.requests.marketplace.UpdateOrderRequest;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateOrderRequest;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.UpdateOrderRequest;
 import com.WeAre.BeatGenius.domain.entities.Beat;
 import com.WeAre.BeatGenius.domain.entities.Order;
 import com.WeAre.BeatGenius.domain.entities.User;

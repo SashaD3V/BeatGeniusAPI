@@ -1,7 +1,7 @@
 package com.WeAre.BeatGenius.services.marketplace.interfaces;
 
-import com.WeAre.BeatGenius.api.requests.marketplace.CreateLicenseRequest;
-import com.WeAre.BeatGenius.api.requests.marketplace.UpdateLicenseRequest;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseRequest;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.UpdateLicenseRequest;
 import com.WeAre.BeatGenius.domain.entities.License;
 
 public interface LicenseService {

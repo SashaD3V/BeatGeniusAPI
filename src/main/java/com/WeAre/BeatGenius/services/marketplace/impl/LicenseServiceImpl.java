@@ -1,7 +1,7 @@
 package com.WeAre.BeatGenius.services.marketplace.impl;
 
-import com.WeAre.BeatGenius.api.requests.marketplace.CreateLicenseRequest;
-import com.WeAre.BeatGenius.api.requests.marketplace.UpdateLicenseRequest;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseRequest;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.UpdateLicenseRequest;
 import com.WeAre.BeatGenius.domain.entities.License;
 import com.WeAre.BeatGenius.domain.mappers.LicenseMapper;
 import com.WeAre.BeatGenius.domain.repositories.BeatRepository;

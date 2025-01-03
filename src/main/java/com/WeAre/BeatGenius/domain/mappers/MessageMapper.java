@@ -1,12 +1,10 @@
 package com.WeAre.BeatGenius.domain.mappers;
 
-import com.WeAre.BeatGenius.api.requests.messaging.CreateMessageRequest;
-import com.WeAre.BeatGenius.api.requests.messaging.UpdateMessageRequest;
-import com.WeAre.BeatGenius.api.responses.messaging.MessageResponse;
+import com.WeAre.BeatGenius.api.dto.requests.messaging.CreateMessageRequest;
+import com.WeAre.BeatGenius.api.dto.responses.messaging.MessageResponse;
 import com.WeAre.BeatGenius.domain.entities.Message;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface MessageMapper {

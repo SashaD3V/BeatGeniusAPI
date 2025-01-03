@@ -1,15 +1,17 @@
+// User.java
 package com.WeAre.BeatGenius.domain.entities;
 
 import com.WeAre.BeatGenius.domain.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import lombok.Data;
+import lombok.ToString;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 
 @Entity
 @Table(name = "users")
@@ -23,6 +25,7 @@ public class User implements UserDetails {
     private String email;
     private String username;
     private String password;
+
     @Column(nullable = false)
     private String artistName;
     private String profilePicture;
@@ -31,14 +34,14 @@ public class User implements UserDetails {
     private UserRole role;
 
     @OneToMany(mappedBy = "producer")
+    @ToString.Exclude
+    @JsonManagedReference
     private List<Beat> beats;
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
         return List.of(new SimpleGrantedAuthority("ROLE_" + role.name()));
     }
-
-    // ça fait quoi ça ?
 
     @Override
     public boolean isAccountNonExpired() {

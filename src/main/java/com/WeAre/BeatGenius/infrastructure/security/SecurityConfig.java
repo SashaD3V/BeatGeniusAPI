@@ -27,10 +27,13 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/api/v1/auth/register").permitAll() // Ajoute cette ligne explicitement
+                        .requestMatchers("/api/v1/auth/login").permitAll()    // Ajoute cette ligne aussi
                         .requestMatchers("/api/v1/auth/**").permitAll()
                         .requestMatchers("/swagger-ui/**").permitAll()
                         .requestMatchers("/v3/api-docs/**").permitAll()
                         .requestMatchers("/swagger-ui.html").permitAll()
+                        .requestMatchers(HttpMethod.POST, "/api/v1/beats/**").hasAuthority("ROLE_PRODUCER")
                         .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session

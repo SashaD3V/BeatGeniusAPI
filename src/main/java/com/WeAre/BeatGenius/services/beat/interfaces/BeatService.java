@@ -1,16 +1,14 @@
 package com.WeAre.BeatGenius.services.beat.interfaces;
 
-import com.WeAre.BeatGenius.api.requests.beat.CreateBeatRequest;
-import com.WeAre.BeatGenius.api.requests.beat.UpdateBeatRequest;
-import com.WeAre.BeatGenius.api.responses.beat.BeatResponse;
+import com.WeAre.BeatGenius.api.dto.requests.beat.CreateBeatRequest;
+import com.WeAre.BeatGenius.api.dto.requests.beat.UpdateBeatRequest;
+import com.WeAre.BeatGenius.api.dto.responses.beat.BeatResponse;
+import com.WeAre.BeatGenius.domain.entities.Beat;
+import com.WeAre.BeatGenius.services.generic.interfaces.GenericService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 
-public interface BeatService {
-    BeatResponse createBeat(CreateBeatRequest request, Long producerId);
-    BeatResponse updateBeat(Long id, UpdateBeatRequest request);
-    BeatResponse getBeat(Long id);
-    Page<BeatResponse> getAllBeats(Pageable pageable);
-    void deleteBeat(Long id);
+public interface BeatService extends GenericService<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest> {
+    // Uniquement la méthode spécifique qui reste nécessaire
     Page<BeatResponse> getProducerBeats(Long producerId, Pageable pageable);
 }

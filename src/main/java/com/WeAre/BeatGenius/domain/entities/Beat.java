@@ -1,20 +1,18 @@
+// Beat.java
 package com.WeAre.BeatGenius.domain.entities;
 
 import com.WeAre.BeatGenius.domain.enums.Genre;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
+import lombok.EqualsAndHashCode;
+import lombok.ToString;
 
 @Entity
 @Table(name = "beats")
 @Data
-public class Beat {
-    @Id
-    @GeneratedValue
-    private Long id;
-
+@EqualsAndHashCode(callSuper = true)
+public class Beat extends BaseEntity {
     @Column(nullable = false)
     private String title;
 
@@ -30,8 +28,7 @@ public class Beat {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "producer_id", nullable = false)
+    @ToString.Exclude
+    @JsonBackReference
     private User producer;
-
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 }

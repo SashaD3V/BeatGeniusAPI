@@ -1,8 +1,8 @@
 package com.WeAre.BeatGenius.domain.mappers;
 
-import com.WeAre.BeatGenius.api.requests.marketplace.CreateLicenseRequest;
-import com.WeAre.BeatGenius.api.requests.marketplace.UpdateLicenseRequest;
-import com.WeAre.BeatGenius.api.responses.marketplace.LicenseResponse;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseRequest;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.UpdateLicenseRequest;
+import com.WeAre.BeatGenius.api.dto.responses.marketplace.LicenseResponse;
 import com.WeAre.BeatGenius.domain.entities.License;
 import com.WeAre.BeatGenius.domain.entities.Beat;
 import org.mapstruct.Mapper;

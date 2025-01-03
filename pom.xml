@@ -142,7 +142,10 @@
 							<version>0.2.0</version>
 						</path>
 					</annotationProcessorPaths>
-				</configuration>
+                    <source>22</source>
+                    <target>22</target>
+                    <compilerArgs>--enable-preview</compilerArgs>
+                </configuration>
 			</plugin>
 		</plugins>
 	</build>

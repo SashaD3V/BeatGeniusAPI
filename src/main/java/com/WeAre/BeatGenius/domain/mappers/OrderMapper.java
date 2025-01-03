@@ -1,13 +1,11 @@
 package com.WeAre.BeatGenius.domain.mappers;
 
-import com.WeAre.BeatGenius.api.requests.marketplace.CreateOrderRequest;
-import com.WeAre.BeatGenius.api.requests.marketplace.UpdateOrderRequest;
-import com.WeAre.BeatGenius.api.responses.marketplace.OrderResponse;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateOrderRequest;
+import com.WeAre.BeatGenius.api.dto.responses.marketplace.OrderResponse;
 import com.WeAre.BeatGenius.domain.entities.Beat;
 import com.WeAre.BeatGenius.domain.entities.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.MappingTarget;
 
 @Mapper(componentModel = "spring")
 public interface OrderMapper {
