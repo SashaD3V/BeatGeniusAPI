@@ -1,106 +1,208 @@
 package com.WeAre.BeatGenius.services.beat.impl;
 
-import com.WeAre.BeatGenius.domain.exceptions.ForbiddenException;
-import com.WeAre.BeatGenius.domain.exceptions.UnauthorizedException;
-import org.springframework.security.core.userdetails.UserDetails;
 import com.WeAre.BeatGenius.api.dto.requests.beat.CreateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.requests.beat.UpdateBeatRequest;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseOptionRequest;
 import com.WeAre.BeatGenius.api.dto.responses.beat.BeatResponse;
 import com.WeAre.BeatGenius.domain.entities.Beat;
+import com.WeAre.BeatGenius.domain.entities.License;
 import com.WeAre.BeatGenius.domain.entities.User;
+import com.WeAre.BeatGenius.domain.enums.LicenseType;
+import com.WeAre.BeatGenius.domain.exceptions.ForbiddenException;
 import com.WeAre.BeatGenius.domain.exceptions.ResourceNotFoundException;
+import com.WeAre.BeatGenius.domain.exceptions.UnauthorizedException;
 import com.WeAre.BeatGenius.domain.mappers.BeatMapper;
 import com.WeAre.BeatGenius.domain.repositories.BeatRepository;
 import com.WeAre.BeatGenius.domain.repositories.UserRepository;
 import com.WeAre.BeatGenius.services.beat.interfaces.BeatService;
-import com.WeAre.BeatGenius.services.generic.impl.GenericServiceImpl;
+import com.WeAre.BeatGenius.services.generic.impl.BaseServiceImpl;
+import com.WeAre.BeatGenius.services.marketplace.interfaces.LicenseService;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseRequest;
+
+import java.math.BigDecimal;
 
 @Service
-public class BeatServiceImpl extends GenericServiceImpl<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest>
+public class BeatServiceImpl
+        extends BaseServiceImpl<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest>
         implements BeatService {
-    private final UserRepository userRepository;
 
-    public BeatServiceImpl(BeatRepository repository, BeatMapper mapper, UserRepository userRepository) {
-        super(repository, mapper);
-        this.userRepository = userRepository;
+  private final UserRepository userRepository;
+  private final LicenseService licenseService;
+
+  public BeatServiceImpl(
+          BeatRepository repository,
+          BeatMapper mapper,
+          UserRepository userRepository,
+          LicenseService licenseService) {
+    super(repository, mapper);
+    this.userRepository = userRepository;
+    this.licenseService = licenseService;
+  }
+
+  @Override
+  @Transactional
+  public BeatResponse create(CreateBeatRequest request) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    UserDetails userDetails = (UserDetails) authentication.getPrincipal();
+    Long producerId = ((User) userDetails).getId();
+
+    User producer = userRepository
+            .findById(producerId)
+            .orElseThrow(() -> new ResourceNotFoundException("Producer not found"));
+
+    // 1. Créer et sauvegarder le beat d'abord
+    Beat beat = mapper.toEntity(request);
+    beat.setProducer(producer);
+    Beat savedBeat = repository.save(beat);
+    repository.flush();  // Force la synchronisation avec la base de données
+
+    // 2. Créer et ajouter les licences standard
+    License basicLicense = createStandardLicense(LicenseType.BASIC, savedBeat);
+    License premiumLicense = createStandardLicense(LicenseType.PREMIUM, savedBeat);
+    License exclusiveLicense = createStandardLicense(LicenseType.EXCLUSIVE, savedBeat);
+
+    savedBeat.getLicenses().add(basicLicense);
+    savedBeat.getLicenses().add(premiumLicense);
+    savedBeat.getLicenses().add(exclusiveLicense);
+
+    // 3. Sauvegarder à nouveau le beat avec ses licences
+    repository.save(savedBeat);
+
+    // 4. Rafraîchir et retourner le résultat
+    savedBeat = repository
+            .findById(savedBeat.getId())
+            .orElseThrow(() -> new ResourceNotFoundException("Beat not found"));
+
+    return mapper.toDto(savedBeat);
+  }
+
+  private License createStandardLicense(LicenseType type, Beat beat) {
+    CreateLicenseOptionRequest option = new CreateLicenseOptionRequest();
+    option.setType(type);
+    option.setPrice(switch (type) {
+      case BASIC -> new BigDecimal("29.99");
+      case PREMIUM -> new BigDecimal("99.99");
+      case EXCLUSIVE -> new BigDecimal("999.99");
+      default -> throw new IllegalArgumentException("Type de licence non supporté");
+    });
+
+    return licenseService.createStandardLicense(option, beat);
+  }
+
+  private void createDefaultLicenses(Beat beat) {
+    CreateLicenseRequest basicLicense = CreateLicenseRequest.builder()
+            .name("Basic License")
+            .type(LicenseType.BASIC)
+            .price(new BigDecimal("29.99"))
+            .fileFormat("MP3")
+            .rights("Non-exclusive rights")
+            .isTagged(true)
+            .contractTerms("""
+                - MP3 file only
+                - Distribution up to 10,000 copies
+                - Must credit producer
+                - For non-profit use only
+                - Audio is tagged with producer tag
+                """)
+            .distributionLimit(10000)
+            .beatId(beat.getId())
+            .build();
+
+    CreateLicenseRequest premiumLicense = CreateLicenseRequest.builder()
+            .name("Premium License")
+            .type(LicenseType.PREMIUM)
+            .price(new BigDecimal("99.99"))
+            .fileFormat("WAV + MP3")
+            .rights("Non-exclusive premium rights")
+            .isTagged(false)
+            .contractTerms("""
+                - WAV + MP3 files
+                - Distribution up to 100,000 copies
+                - Must credit producer
+                - Commercial use allowed
+                - Untagged audio files
+                """)
+            .distributionLimit(100000)
+            .beatId(beat.getId())
+            .build();
+
+    CreateLicenseRequest exclusiveLicense = CreateLicenseRequest.builder()
+            .name("Exclusive Rights")
+            .type(LicenseType.EXCLUSIVE)
+            .price(new BigDecimal("999.99"))
+            .fileFormat("WAV + MP3 + Trackouts")
+            .rights("Full exclusive rights")
+            .isTagged(false)
+            .contractTerms("""
+                - WAV + MP3 + Trackout files
+                - Unlimited distribution
+                - Full exclusive rights
+                - Commercial use allowed
+                - Beat will be removed from marketplace
+                - Complete ownership transfer
+                """)
+            .distributionLimit(null)
+            .beatId(beat.getId())
+            .build();
+
+    licenseService.createLicense(basicLicense);
+    licenseService.createLicense(premiumLicense);
+    licenseService.createLicense(exclusiveLicense);
+  }
+
+  @Override
+  @Transactional
+  public BeatResponse update(Long id, UpdateBeatRequest request) {
+    Beat existingBeat = repository
+            .findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Beat not found with id: " + id));
+
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    User currentUser = (User) authentication.getPrincipal();
+    if (!existingBeat.getProducer().getId().equals(currentUser.getId())) {
+      throw new ForbiddenException("Vous n'êtes pas autorisé à modifier ce beat");
     }
 
-    @Override
-    @Transactional
-    public BeatResponse create(CreateBeatRequest request) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        System.out.println("Authentication: " + authentication);
+    mapper.updateEntityFromDto(request, existingBeat);
+    Beat updatedBeat = repository.save(existingBeat);
+    return mapper.toDto(updatedBeat);
+  }
 
-        Object principal = authentication.getPrincipal();
-        System.out.println("Principal: " + principal);
-
-        if (principal instanceof UserDetails) {
-            UserDetails userDetails = (UserDetails) principal;
-            System.out.println("UserDetails: " + userDetails);
-
-            Long producerId;
-            if (userDetails instanceof User) {
-                producerId = ((User) userDetails).getId();
-            } else {
-                producerId = Long.parseLong(userDetails.getUsername());
-            }
-
-            System.out.println("Producer ID: " + producerId);
-
-            User producer = userRepository.findById(producerId)
-                    .orElseThrow(() -> new ResourceNotFoundException("Producer not found"));
-
-            Beat beat = mapper.toEntity(request);
-            beat.setProducer(producer);
-
-            Beat savedBeat = repository.save(beat);
-            return mapper.toDto(savedBeat);
-        } else {
-            throw new UnauthorizedException("Utilisateur non authentifié ou principal non reconnu");
-        }
+  @Override
+  public void delete(Long id) {
+    Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+    if (!(authentication.getPrincipal() instanceof User)) {
+      throw new UnauthorizedException("Vous devez être connecté");
     }
 
-    @Override
-    public void delete(Long id) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!(authentication.getPrincipal() instanceof User)) {
-            throw new UnauthorizedException("Vous devez être connecté");
-        }
+    User currentUser = (User) authentication.getPrincipal();
+    Beat beat = repository
+            .findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Beat not found"));
 
-        User currentUser = (User) authentication.getPrincipal();
-        Beat beat = repository.findById(id)
-                .orElseThrow(() -> new ResourceNotFoundException("Beat not found"));
-
-        if (!beat.getProducer().getId().equals(currentUser.getId())) {
-            throw new ForbiddenException("Vous n'êtes pas autorisé à supprimer ce beat");
-        }
-
-        repository.deleteById(id);
+    if (!beat.getProducer().getId().equals(currentUser.getId())) {
+      throw new ForbiddenException("Vous n'êtes pas autorisé à supprimer ce beat");
     }
 
-    @Override
-    public Page<BeatResponse> getAll(Pageable pageable) {
-        System.out.println("Pageable request: " + pageable);
-        Page<Beat> beats = repository.findAll(pageable);
-        System.out.println("Found beats: " + beats.getContent());
-        return beats.map(mapper::toDto);
-    }
+    repository.deleteById(id);
+  }
 
-    @Override
-    public Page<BeatResponse> getProducerBeats(Long producerId, Pageable pageable) {
-        System.out.println("Getting beats for producer: " + producerId);
-        System.out.println("Pageable request: " + pageable);
+  @Override
+  public Page<BeatResponse> getAll(Pageable pageable) {
+    Page<Beat> beats = repository.findAll(pageable);
+    return beats.map(mapper::toDto);
+  }
 
-        // Vérifie si les beats existent pour ce producteur
-        Page<Beat> beats = ((BeatRepository) repository).findByProducerId(producerId, pageable);
-        System.out.println("Found beats in DB: " + beats.getContent()); // Pour debug
-
-        return beats.map(mapper::toDto);
-    }
+  @Override
+  public Page<BeatResponse> getProducerBeats(Long producerId, Pageable pageable) {
+    Page<Beat> beats = ((BeatRepository) repository).findByProducerId(producerId, pageable);
+    return beats.map(mapper::toDto);
+  }
 }

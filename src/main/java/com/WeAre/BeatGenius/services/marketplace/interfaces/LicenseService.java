@@ -2,42 +2,22 @@ package com.WeAre.BeatGenius.services.marketplace.interfaces;
 
 import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseRequest;
 import com.WeAre.BeatGenius.api.dto.requests.marketplace.UpdateLicenseRequest;
+import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseOptionRequest;
+import com.WeAre.BeatGenius.api.dto.responses.marketplace.LicenseResponse;
 import com.WeAre.BeatGenius.domain.entities.License;
+import com.WeAre.BeatGenius.domain.entities.Beat;
+import com.WeAre.BeatGenius.services.generic.interfaces.BaseService;
 
-public interface LicenseService {
-    /**
-     * Creates a new license
-     *
-     * @param request License creation details
-     * @return The created license
-     * @throws EntityNotFoundException if the beat is not found
-     */
-    License createLicense(CreateLicenseRequest request);
+public interface LicenseService
+        extends BaseService<License, LicenseResponse, CreateLicenseRequest, UpdateLicenseRequest> {
 
-    /**
-     * Updates an existing license
-     *
-     * @param id License ID to update
-     * @param request Updated license details
-     * @return The updated license
-     * @throws EntityNotFoundException if the license is not found
-     */
-    License updateLicense(Long id, UpdateLicenseRequest request);
+  License createStandardLicense(CreateLicenseOptionRequest option, Beat beat);
 
-    /**
-     * Deletes a license
-     *
-     * @param id License ID to delete
-     * @throws EntityNotFoundException if the license is not found
-     */
-    void deleteLicense(Long id);
+  License createLicense(CreateLicenseRequest request);
 
-    /**
-     * Gets a license by ID
-     *
-     * @param id License ID to find
-     * @return The found license
-     * @throws EntityNotFoundException if the license is not found
-     */
-    License getLicense(Long id);
+  License updateLicense(Long id, UpdateLicenseRequest request);
+
+  void deleteLicense(Long id);
+
+  License getLicense(Long id);
 }

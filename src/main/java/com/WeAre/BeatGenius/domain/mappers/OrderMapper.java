@@ -7,15 +7,24 @@ import com.WeAre.BeatGenius.domain.entities.Order;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 
-@Mapper(componentModel = "spring")
+@Mapper(
+    componentModel = "spring",
+    uses = {BeatMapper.class, UserMapper.class, LicenseMapper.class})
 public interface OrderMapper {
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "totalPrice", source = "beat.price")
-    @Mapping(target = "beat", source = "beat")
-    @Mapping(target = "buyer", ignore = true)  // On l'assignera dans le service
-    @Mapping(target = "status", expression = "java(com.WeAre.BeatGenius.domain.enums.OrderStatus.PENDING)")  // Valeur par défaut
-    Order toEntity(CreateOrderRequest request, Beat beat);
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "createdAt", expression = "java(java.time.LocalDateTime.now())")
+  @Mapping(target = "beat", source = "beat")
+  @Mapping(target = "buyer", ignore = true)
+  @Mapping(target = "status", constant = "PENDING")
+  @Mapping(target = "license", ignore = true) // Sera défini dans le service
+  @Mapping(target = "totalPrice", ignore = true) // Sera calculé dans le service
+  Order toEntity(CreateOrderRequest request, Beat beat);
 
-    OrderResponse toResponse(Order order);
+  @Mapping(source = "buyer", target = "buyer")
+  @Mapping(source = "beat", target = "beat")
+  @Mapping(source = "license", target = "license")
+  @Mapping(source = "totalPrice", target = "totalPrice")
+  @Mapping(source = "status", target = "status")
+  @Mapping(source = "createdAt", target = "createdAt")
+  OrderResponse toResponse(Order order);
 }

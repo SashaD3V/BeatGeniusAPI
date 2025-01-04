@@ -5,9 +5,9 @@ import lombok.Data;
 
 @Data
 public class RegisterRequest {
-    private String username;
-    private String password;
-    private String email;
-    private String artistName;  // Ajout du champ manquant
-    private UserRole role;
+  private String username;
+  private String password;
+  private String email;
+  private String artistName; // Ajout du champ manquant
+  private UserRole role;
 }

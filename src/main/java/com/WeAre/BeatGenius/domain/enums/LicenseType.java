@@ -1,8 +1,17 @@
 package com.WeAre.BeatGenius.domain.enums;
 
 public enum LicenseType {
-    EXCLUSIVE,
-    NON_EXCLUSIVE,
-    BASIC,
-    PREMIUM
+  BASIC("Basic License"),
+  PREMIUM("Premium License"),
+  EXCLUSIVE("Exclusive Rights");
+
+  private final String displayName;
+
+  LicenseType(String displayName) {
+    this.displayName = displayName;
+  }
+
+  public String getDisplayName() {
+    return displayName;
+  }
 }

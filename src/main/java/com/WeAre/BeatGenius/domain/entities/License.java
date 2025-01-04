@@ -2,32 +2,49 @@ package com.WeAre.BeatGenius.domain.entities;
 
 import com.WeAre.BeatGenius.domain.enums.LicenseType;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
-
 import java.math.BigDecimal;
+import lombok.*;
+import lombok.experimental.SuperBuilder;
 
 @Entity
 @Table(name = "licenses")
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-@Builder
-public class License {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+@SuperBuilder
+@EqualsAndHashCode(callSuper = true)
+public class License extends BaseEntity {
 
-    @Enumerated(EnumType.STRING)
-    private LicenseType type;
+  @Builder.Default private String name = null;
 
-    @Column(nullable = false)
-    private BigDecimal price;
+  @Enumerated(EnumType.STRING)
+  @Builder.Default
+  private LicenseType type = null;
 
-    private String rights;
+  @Column(nullable = false)
+  @Builder.Default
+  private BigDecimal price = null;
 
-    @ManyToOne
-    private Beat beat;
+  @Column(name = "file_format")
+  @Builder.Default
+  private String fileFormat = null;
+
+  @Builder.Default private String rights = null;
+
+  @Builder.Default
+  @Column(name = "is_tagged")
+  private Boolean isTagged = false;
+
+  @Column(length = 1000)
+  @Builder.Default
+  private String contractTerms = null;
+
+  @Column(name = "distribution_limit")
+  @Builder.Default
+  private Integer distributionLimit = null;
+
+  @ManyToOne(fetch = FetchType.LAZY)
+  @JoinColumn(name = "beat_id")
+  @Builder.Default
+  private Beat beat = null;
 }

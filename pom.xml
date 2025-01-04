@@ -151,6 +151,18 @@
                     <compilerArgs>--enable-preview</compilerArgs>
                 </configuration>
 			</plugin>
+			<plugin>
+				<groupId>com.diffplug.spotless</groupId>
+				<artifactId>spotless-maven-plugin</artifactId>
+				<version>2.41.1</version> <!-- Vérifiez la dernière version disponible -->
+				<!-- Exécutez la commande mvn spotless:check pour vérifier si votre code respecte les conventions de formatage définies. -->
+				<!-- Exécutez la commande mvn spotless:apply pour reformater automatiquement votre code selon les règles spécifiées. -->
+				<configuration>
+					<java>
+						<googleJavaFormat />
+					</java>
+				</configuration>
+			</plugin>
 		</plugins>
 	</build>
 

@@ -8,12 +8,12 @@ import org.mapstruct.Mapping;
 
 @Mapper(componentModel = "spring")
 public interface MessageMapper {
-    @Mapping(target = "id", ignore = true)
-    @Mapping(target = "sender", ignore = true)  // On l'assignera dans le service
-    @Mapping(target = "recipient", ignore = true)  // On l'assignera dans le service
-    @Mapping(target = "sentAt", expression = "java(java.time.LocalDateTime.now())")
-    @Mapping(target = "read", constant = "false")  // Message non lu par défaut
-    Message toEntity(CreateMessageRequest request);
+  @Mapping(target = "id", ignore = true)
+  @Mapping(target = "sender", ignore = true) // On l'assignera dans le service
+  @Mapping(target = "recipient", ignore = true) // On l'assignera dans le service
+  @Mapping(target = "sentAt", expression = "java(java.time.LocalDateTime.now())")
+  @Mapping(target = "read", constant = "false") // Message non lu par défaut
+  Message toEntity(CreateMessageRequest request);
 
-    MessageResponse toResponse(Message message);
+  MessageResponse toResponse(Message message);
 }

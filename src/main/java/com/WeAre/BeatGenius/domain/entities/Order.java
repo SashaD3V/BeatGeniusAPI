@@ -2,31 +2,31 @@ package com.WeAre.BeatGenius.domain.entities;
 
 import com.WeAre.BeatGenius.domain.enums.OrderStatus;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.Data;
 import org.hibernate.annotations.CreationTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "orders")
 @Data
 public class Order {
-    @Id @GeneratedValue
-    private Long id;
+  @Id @GeneratedValue private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private User buyer;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private User buyer;
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    private Beat beat;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private Beat beat;
 
-    @Column(nullable = false)
-    private Double totalPrice;
+  @ManyToOne(fetch = FetchType.LAZY)
+  private License license; // Ajout de la référence à la licence
 
-    @Enumerated(EnumType.STRING)
-    @Column(nullable = false)
-    private OrderStatus status;
+  @Column(nullable = false)
+  private Double totalPrice;
 
-    @CreationTimestamp
-    private LocalDateTime createdAt;
+  @Enumerated(EnumType.STRING)
+  @Column(nullable = false)
+  private OrderStatus status;
+
+  @CreationTimestamp private LocalDateTime createdAt;
 }
