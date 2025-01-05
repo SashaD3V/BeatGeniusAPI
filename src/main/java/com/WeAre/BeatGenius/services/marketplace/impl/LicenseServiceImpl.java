@@ -4,11 +4,11 @@ import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseOptionRequ
 import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseRequest;
 import com.WeAre.BeatGenius.api.dto.requests.marketplace.UpdateLicenseRequest;
 import com.WeAre.BeatGenius.api.dto.responses.marketplace.LicenseResponse;
-import com.WeAre.BeatGenius.domain.entities.Beat;
 import com.WeAre.BeatGenius.domain.entities.License;
+import com.WeAre.BeatGenius.domain.entities.beat.Beat;
 import com.WeAre.BeatGenius.domain.mappers.LicenseMapper;
-import com.WeAre.BeatGenius.domain.repositories.BeatRepository;
 import com.WeAre.BeatGenius.domain.repositories.LicenseRepository;
+import com.WeAre.BeatGenius.domain.repositories.beat.BeatRepository;
 import com.WeAre.BeatGenius.services.generic.impl.BaseServiceImpl;
 import com.WeAre.BeatGenius.services.marketplace.interfaces.LicenseService;
 import jakarta.persistence.EntityNotFoundException;
@@ -17,17 +17,17 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class LicenseServiceImpl
-        extends BaseServiceImpl<License, LicenseResponse, CreateLicenseRequest, UpdateLicenseRequest>
-        implements LicenseService {
+    extends BaseServiceImpl<License, LicenseResponse, CreateLicenseRequest, UpdateLicenseRequest>
+    implements LicenseService {
 
   private final LicenseMapper licenseMapper;
   private final BeatRepository beatRepository;
   private final LicenseRepository licenseRepository;
 
   public LicenseServiceImpl(
-          LicenseRepository licenseRepository,
-          LicenseMapper licenseMapper,
-          BeatRepository beatRepository) {
+      LicenseRepository licenseRepository,
+      LicenseMapper licenseMapper,
+      BeatRepository beatRepository) {
     super(licenseRepository, licenseMapper);
     this.licenseMapper = licenseMapper;
     this.beatRepository = beatRepository;
@@ -38,7 +38,7 @@ public class LicenseServiceImpl
   @Transactional
   public License createStandardLicense(CreateLicenseOptionRequest option, Beat beat) {
     License license =
-            License.builder().beat(beat).price(option.getPrice()).type(option.getType()).build();
+        License.builder().beat(beat).price(option.getPrice()).type(option.getType()).build();
 
     switch (option.getType()) {
       case BASIC -> {
@@ -48,7 +48,7 @@ public class LicenseServiceImpl
         license.setDistributionLimit(10000);
         license.setRights("Non-exclusive rights");
         license.setContractTerms(
-                """
+            """
                 - MP3 file only
                 - Distribution up to 10,000 copies
                 - Must credit producer
@@ -63,7 +63,7 @@ public class LicenseServiceImpl
         license.setDistributionLimit(100000);
         license.setRights("Non-exclusive premium rights");
         license.setContractTerms(
-                """
+            """
                 - WAV + MP3 files
                 - Distribution up to 100,000 copies
                 - Must credit producer
@@ -78,7 +78,7 @@ public class LicenseServiceImpl
         license.setDistributionLimit(null);
         license.setRights("Full exclusive rights");
         license.setContractTerms(
-                """
+            """
                 - WAV + MP3 + Trackout files
                 - Unlimited distribution
                 - Full exclusive rights
@@ -97,16 +97,17 @@ public class LicenseServiceImpl
   public License createLicense(CreateLicenseRequest request) {
     License license = licenseMapper.toEntity(request);
     license.setBeat(
-            beatRepository
-                    .findById(request.getBeatId())
-                    .orElseThrow(() -> new EntityNotFoundException("Beat not found")));
+        beatRepository
+            .findById(request.getBeatId())
+            .orElseThrow(() -> new EntityNotFoundException("Beat not found")));
     return licenseRepository.save(license);
   }
 
   @Override
   @Transactional
   public License updateLicense(Long id, UpdateLicenseRequest request) {
-    License license = licenseRepository
+    License license =
+        licenseRepository
             .findById(id)
             .orElseThrow(() -> new EntityNotFoundException("License not found"));
 
@@ -135,7 +136,7 @@ public class LicenseServiceImpl
   @Override
   public License getLicense(Long id) {
     return licenseRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("License not found"));
+        .findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("License not found"));
   }
 }

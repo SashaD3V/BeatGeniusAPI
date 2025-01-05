@@ -5,7 +5,7 @@ import com.WeAre.BeatGenius.api.dto.requests.beat.CreateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.requests.beat.UpdateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.responses.beat.BeatResponse;
 import com.WeAre.BeatGenius.api.dto.responses.page.PageResponse;
-import com.WeAre.BeatGenius.domain.entities.Beat;
+import com.WeAre.BeatGenius.domain.entities.beat.Beat;
 import com.WeAre.BeatGenius.domain.enums.Genre;
 import com.WeAre.BeatGenius.domain.enums.Note;
 import com.WeAre.BeatGenius.domain.enums.Scale;

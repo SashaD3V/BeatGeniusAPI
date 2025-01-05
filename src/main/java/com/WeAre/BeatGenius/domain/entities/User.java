@@ -1,6 +1,7 @@
 // User.java
 package com.WeAre.BeatGenius.domain.entities;
 
+import com.WeAre.BeatGenius.domain.entities.beat.Beat;
 import com.WeAre.BeatGenius.domain.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;

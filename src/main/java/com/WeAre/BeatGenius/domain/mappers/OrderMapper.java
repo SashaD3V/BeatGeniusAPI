@@ -2,8 +2,9 @@ package com.WeAre.BeatGenius.domain.mappers;
 
 import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateOrderRequest;
 import com.WeAre.BeatGenius.api.dto.responses.marketplace.OrderResponse;
-import com.WeAre.BeatGenius.domain.entities.Beat;
 import com.WeAre.BeatGenius.domain.entities.Order;
+import com.WeAre.BeatGenius.domain.entities.beat.Beat;
+import com.WeAre.BeatGenius.domain.mappers.beat.BeatMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 

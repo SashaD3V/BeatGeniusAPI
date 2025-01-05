@@ -2,13 +2,12 @@ package com.WeAre.BeatGenius.api.dto.requests.marketplace;
 
 import com.WeAre.BeatGenius.domain.enums.LicenseType;
 import java.math.BigDecimal;
-
 import lombok.Builder;
 import lombok.Data;
 
 // CreateLicenseRequest
 @Data
-@Builder  // Ajoutez cette annotation
+@Builder // Ajoutez cette annotation
 public class CreateLicenseRequest {
   private String name;
   private LicenseType type;

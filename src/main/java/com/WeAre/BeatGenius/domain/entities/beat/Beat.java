@@ -1,6 +1,9 @@
 // Beat.java
-package com.WeAre.BeatGenius.domain.entities;
+package com.WeAre.BeatGenius.domain.entities.beat;
 
+import com.WeAre.BeatGenius.domain.entities.BaseEntity;
+import com.WeAre.BeatGenius.domain.entities.License;
+import com.WeAre.BeatGenius.domain.entities.User;
 import com.WeAre.BeatGenius.domain.enums.Genre;
 import com.WeAre.BeatGenius.domain.enums.Note;
 import com.WeAre.BeatGenius.domain.enums.Scale;

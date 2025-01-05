@@ -1,18 +1,21 @@
-package com.WeAre.BeatGenius.domain.mappers;
+package com.WeAre.BeatGenius.domain.mappers.beat;
 
 import com.WeAre.BeatGenius.api.dto.requests.beat.CreateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.requests.beat.UpdateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.responses.beat.BeatResponse;
-import com.WeAre.BeatGenius.domain.entities.Beat;
+import com.WeAre.BeatGenius.domain.entities.beat.Beat;
+import com.WeAre.BeatGenius.domain.mappers.BaseMapper;
+import com.WeAre.BeatGenius.domain.mappers.LicenseMapper;
+import com.WeAre.BeatGenius.domain.mappers.UserMapper;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(
-        componentModel = "spring",
-        uses = {UserMapper.class, LicenseMapper.class, BeatCreditMapper.class})
+    componentModel = "spring",
+    uses = {UserMapper.class, LicenseMapper.class, BeatCreditMapper.class})
 public interface BeatMapper
-        extends BaseMapper<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest> {
+    extends BaseMapper<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest> {
 
   @Override
   @Mapping(source = "producer", target = "producer")

@@ -1,11 +1,12 @@
-package com.WeAre.BeatGenius.domain.entities;
+package com.WeAre.BeatGenius.domain.entities.beat;
 
+import com.WeAre.BeatGenius.domain.entities.BaseEntity;
+import com.WeAre.BeatGenius.domain.entities.User;
 import com.WeAre.BeatGenius.domain.enums.CreditStatus;
 import jakarta.persistence.*;
+import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "beat_credits")

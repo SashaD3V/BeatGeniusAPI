@@ -1,5 +1,6 @@
 package com.WeAre.BeatGenius.domain.entities;
 
+import com.WeAre.BeatGenius.domain.entities.beat.Beat;
 import com.WeAre.BeatGenius.domain.enums.LicenseType;
 import jakarta.persistence.*;
 import java.math.BigDecimal;

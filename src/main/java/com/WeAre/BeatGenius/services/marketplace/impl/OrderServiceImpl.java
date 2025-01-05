@@ -2,12 +2,12 @@ package com.WeAre.BeatGenius.services.marketplace.impl;
 
 import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateOrderRequest;
 import com.WeAre.BeatGenius.api.dto.requests.marketplace.UpdateOrderRequest;
-import com.WeAre.BeatGenius.domain.entities.Beat;
 import com.WeAre.BeatGenius.domain.entities.Order;
 import com.WeAre.BeatGenius.domain.entities.User;
+import com.WeAre.BeatGenius.domain.entities.beat.Beat;
 import com.WeAre.BeatGenius.domain.mappers.OrderMapper;
-import com.WeAre.BeatGenius.domain.repositories.BeatRepository;
 import com.WeAre.BeatGenius.domain.repositories.OrderRepository;
+import com.WeAre.BeatGenius.domain.repositories.beat.BeatRepository;
 import com.WeAre.BeatGenius.services.marketplace.interfaces.OrderService;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;

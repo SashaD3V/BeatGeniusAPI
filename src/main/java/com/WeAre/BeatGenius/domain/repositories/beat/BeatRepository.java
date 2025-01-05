@@ -1,6 +1,6 @@
-package com.WeAre.BeatGenius.domain.repositories;
+package com.WeAre.BeatGenius.domain.repositories.beat;
 
-import com.WeAre.BeatGenius.domain.entities.Beat;
+import com.WeAre.BeatGenius.domain.entities.beat.Beat;
 import com.WeAre.BeatGenius.domain.enums.Genre;
 import java.util.List;
 import org.springframework.data.domain.Page;
