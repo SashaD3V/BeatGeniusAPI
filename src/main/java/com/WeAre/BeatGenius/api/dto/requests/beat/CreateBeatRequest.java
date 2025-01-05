@@ -11,9 +11,11 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 import java.time.LocalDateTime;
 import java.util.List;
+import lombok.Builder;
 import lombok.Data;
 
 @Data
+@Builder
 public class CreateBeatRequest {
   @NotBlank(message = "Le titre est obligatoire")
   @Schema(description = "Titre de l'instrumentale", example = "Trap Melody")

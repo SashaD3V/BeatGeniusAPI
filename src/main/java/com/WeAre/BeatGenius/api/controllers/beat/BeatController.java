@@ -1,15 +1,18 @@
 package com.WeAre.BeatGenius.api.controllers.beat;
 
-import com.WeAre.BeatGenius.api.controllers.BaseController;
+import com.WeAre.BeatGenius.api.controllers.generic.BaseController;
 import com.WeAre.BeatGenius.api.dto.requests.beat.CreateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.requests.beat.UpdateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.responses.beat.BeatResponse;
 import com.WeAre.BeatGenius.api.dto.responses.page.PageResponse;
+import com.WeAre.BeatGenius.domain.constants.SecurityConstants;
 import com.WeAre.BeatGenius.domain.entities.beat.Beat;
 import com.WeAre.BeatGenius.domain.enums.Genre;
 import com.WeAre.BeatGenius.domain.enums.Note;
 import com.WeAre.BeatGenius.domain.enums.Scale;
-import com.WeAre.BeatGenius.domain.exceptions.InvalidFileException;
+import com.WeAre.BeatGenius.domain.mappers.beat.BeatMapper;
+import com.WeAre.BeatGenius.domain.validators.AudioValidator;
+import com.WeAre.BeatGenius.domain.validators.DateValidator;
 import com.WeAre.BeatGenius.infrastructure.storage.StorageService;
 import com.WeAre.BeatGenius.services.beat.interfaces.BeatService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -18,15 +21,9 @@ import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeParseException;
 import java.util.List;
-import javax.sound.sampled.AudioFormat;
-import javax.sound.sampled.AudioInputStream;
-import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
@@ -42,24 +39,26 @@ public class BeatController
     extends BaseController<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest> {
   private final BeatService beatService;
   private final StorageService storageService;
+  private final BeatMapper beatMapper;
 
-  public BeatController(BeatService service, StorageService storageService) {
+  public BeatController(BeatService service, StorageService storageService, BeatMapper beatMapper) {
     super(service);
     this.beatService = service;
     this.storageService = storageService;
+    this.beatMapper = beatMapper;
   }
 
   @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-  @PreAuthorize("hasAuthority('ROLE_PRODUCER')")
+  @PreAuthorize("hasAuthority('" + SecurityConstants.PRODUCER_ROLE + "')")
   @Operation(
       summary = "Créer un nouveau beat",
       description =
           """
-                Upload d'une nouvelle instrumentale.
+            Upload d'une nouvelle instrumentale.
 
-                Formats acceptés : MP3, WAV
-                Durée : minimum 1 minute, maximum 5 minutes
-                """)
+            Formats acceptés : MP3, WAV
+            Durée : minimum 1 minute, maximum 5 minutes
+            """)
   @io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
   @ApiResponses(
@@ -93,12 +92,7 @@ public class BeatController
       @RequestParam(required = false)
           @Parameter(
               description = "Date de sortie",
-              schema =
-                  @Schema(
-                      type = "string",
-                      format = "date",
-                      example = "2025-01-05") // format date uniquement
-              )
+              schema = @Schema(type = "string", format = "date", example = "2025-01-05"))
           String releaseDateStr,
       @RequestParam(required = false) @Parameter(description = "Éligible aux réductions")
           Boolean includeForBulkDiscounts,
@@ -108,54 +102,30 @@ public class BeatController
               content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
           MultipartFile audioFile)
       throws IOException, UnsupportedAudioFileException {
-    // Vérification du type MIME
-    String contentType = audioFile.getContentType();
-    if (!"audio/mpeg".equals(contentType) && !"audio/wav".equals(contentType)) {
-      throw new InvalidFileException("Le fichier doit être au format MP3 ou WAV");
-    }
 
-    // Vérification de la durée avec AudioInputStream
-    try (AudioInputStream audioInputStream =
-        AudioSystem.getAudioInputStream(new ByteArrayInputStream(audioFile.getBytes()))) {
-      AudioFormat format = audioInputStream.getFormat();
-      long frames = audioInputStream.getFrameLength();
-      double durationInSeconds = (frames / format.getFrameRate());
+    // Validation du fichier audio
+    AudioValidator.validateAudioFile(audioFile);
+    String audioUrl = storageService.store(audioFile);
 
-      if (durationInSeconds < 60 || durationInSeconds > 300) {
-        throw new InvalidFileException("La durée doit être entre 1 et 5 minutes");
-      }
+    // Validation et conversion de la date de sortie
+    LocalDateTime releaseDate = DateValidator.validateAndConvertReleaseDate(releaseDateStr);
 
-      String audioUrl = storageService.store(audioFile);
+    CreateBeatRequest createDto =
+        beatMapper.toCreateRequest(
+            title,
+            genre,
+            description,
+            audioUrl,
+            bpm,
+            note,
+            scale,
+            tags,
+            moods,
+            instruments,
+            releaseDate,
+            includeForBulkDiscounts);
 
-      // ICI - Conversion de la date
-      LocalDateTime releaseDate = null;
-      if (releaseDateStr != null && !releaseDateStr.isEmpty()) {
-        try {
-          releaseDate = LocalDate.parse(releaseDateStr).atStartOfDay();
-        } catch (DateTimeParseException e) {
-          throw new IllegalArgumentException(
-              "Format de date invalide. Utilisez le format: YYYY-MM-DD");
-        }
-      }
-
-      // Création du DTO
-      CreateBeatRequest createDto = new CreateBeatRequest();
-      createDto.setTitle(title);
-      createDto.setGenre(genre);
-      createDto.setDescription(description);
-      createDto.setAudioUrl(audioUrl);
-      createDto.setBpm(bpm);
-      createDto.setNote(note);
-      createDto.setScale(scale);
-      createDto.setTags(tags);
-      createDto.setMoods(moods);
-      createDto.setInstruments(instruments);
-      createDto.setReleaseDate(releaseDate); // Utilisation de la date convertie
-      createDto.setIncludeForBulkDiscounts(includeForBulkDiscounts);
-      // heu on peut pas raccourcir un peu ce bloc de code ?
-
-      return super.create(createDto);
-    }
+    return super.create(createDto);
   }
 
   @DeleteMapping("/{id}")
@@ -200,16 +170,16 @@ public class BeatController
       summary = "Obtenir les beats d'un producteur",
       description =
           """
-                   Récupère les beats d'un producteur avec pagination et tri.
+            Récupère les beats d'un producteur avec pagination et tri.
 
-                   Options de tri disponibles :
-                   - title,asc/desc (Tri par titre)
-                   - createdAt,asc/desc (Tri par date de création)
-                   - price,asc/desc (Tri par prix)
-                   - genre,asc/desc (Tri par genre)
+            Options de tri disponibles :
+            - title,asc/desc (Tri par titre)
+            - createdAt,asc/desc (Tri par date de création)
+            - price,asc/desc (Tri par prix)
+            - genre,asc/desc (Tri par genre)
 
-                   Exemple : /api/v1/beats/producer/5?page=0&size=10&sort=createdAt,desc
-                   """)
+            Exemple : /api/v1/beats/producer/5?page=0&size=10&sort=createdAt,desc
+            """)
   public ResponseEntity<PageResponse<BeatResponse>> getProducerBeats(
       @PathVariable Long producerId,
       @RequestParam(defaultValue = "0") @Parameter(description = "Numéro de la page") int page,

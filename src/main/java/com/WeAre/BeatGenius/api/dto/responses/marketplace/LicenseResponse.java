@@ -1,6 +1,6 @@
 package com.WeAre.BeatGenius.api.dto.responses.marketplace;
 
-import com.WeAre.BeatGenius.api.dto.BaseDTO;
+import com.WeAre.BeatGenius.api.dto.generic.BaseDTO;
 import com.WeAre.BeatGenius.domain.enums.LicenseType;
 import java.math.BigDecimal;
 import lombok.Data;

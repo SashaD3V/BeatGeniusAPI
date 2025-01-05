@@ -5,6 +5,9 @@ import com.WeAre.BeatGenius.api.dto.requests.beat.UpdateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseOptionRequest;
 import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseRequest;
 import com.WeAre.BeatGenius.api.dto.responses.beat.BeatResponse;
+import com.WeAre.BeatGenius.domain.constants.CreditConstants;
+import com.WeAre.BeatGenius.domain.constants.LicenseConstants;
+import com.WeAre.BeatGenius.domain.constants.PricingConstants;
 import com.WeAre.BeatGenius.domain.entities.License;
 import com.WeAre.BeatGenius.domain.entities.User;
 import com.WeAre.BeatGenius.domain.entities.beat.Beat;
@@ -21,7 +24,6 @@ import com.WeAre.BeatGenius.domain.repositories.beat.BeatRepository;
 import com.WeAre.BeatGenius.services.beat.interfaces.BeatService;
 import com.WeAre.BeatGenius.services.generic.impl.BaseServiceImpl;
 import com.WeAre.BeatGenius.services.marketplace.interfaces.LicenseService;
-import java.math.BigDecimal;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.Authentication;
@@ -37,18 +39,18 @@ public class BeatServiceImpl
 
   private final UserRepository userRepository;
   private final LicenseService licenseService;
-  private final BeatCreditRepository beatCreditRepository; // Ajouter cette ligne
+  private final BeatCreditRepository beatCreditRepository;
 
   public BeatServiceImpl(
       BeatRepository repository,
       BeatMapper mapper,
       UserRepository userRepository,
       LicenseService licenseService,
-      BeatCreditRepository beatCreditRepository) { // Ajouter ce paramètre)
+      BeatCreditRepository beatCreditRepository) {
     super(repository, mapper);
     this.userRepository = userRepository;
     this.licenseService = licenseService;
-    this.beatCreditRepository = beatCreditRepository; // Ajouter cette ligne
+    this.beatCreditRepository = beatCreditRepository;
   }
 
   @Override
@@ -63,13 +65,11 @@ public class BeatServiceImpl
             .findById(producerId)
             .orElseThrow(() -> new ResourceNotFoundException("Producer not found"));
 
-    // 1. Créer et sauvegarder le beat d'abord
     Beat beat = mapper.toEntity(request);
     beat.setProducer(producer);
     Beat savedBeat = repository.save(beat);
-    repository.flush(); // Force la synchronisation avec la base de données
+    repository.flush();
 
-    // 2. Créer et ajouter les licences standard
     License basicLicense = createStandardLicense(LicenseType.BASIC, savedBeat);
     License premiumLicense = createStandardLicense(LicenseType.PREMIUM, savedBeat);
     License exclusiveLicense = createStandardLicense(LicenseType.EXCLUSIVE, savedBeat);
@@ -78,21 +78,17 @@ public class BeatServiceImpl
     savedBeat.getLicenses().add(premiumLicense);
     savedBeat.getLicenses().add(exclusiveLicense);
 
-    // 3. Ajouter automatiquement le crédit pour le producteur principal
     BeatCredit mainProducerCredit = new BeatCredit();
     mainProducerCredit.setBeat(savedBeat);
     mainProducerCredit.setProducer(producer);
-    mainProducerCredit.setRole("Main Producer");
-    mainProducerCredit.setProfitShare(50.0);
-    mainProducerCredit.setPublishingShare(50.0);
+    mainProducerCredit.setRole(CreditConstants.MAIN_PRODUCER_ROLE);
+    mainProducerCredit.setProfitShare(CreditConstants.MAIN_PRODUCER_PROFIT_SHARE);
+    mainProducerCredit.setPublishingShare(CreditConstants.MAIN_PRODUCER_PUBLISHING_SHARE);
     mainProducerCredit.setStatus(CreditStatus.ACCEPTED);
 
     beatCreditRepository.save(mainProducerCredit);
-
-    // 4. Sauvegarder à nouveau le beat avec ses licences et crédits
     repository.save(savedBeat);
 
-    // 5. Rafraîchir et retourner le résultat
     savedBeat =
         repository
             .findById(savedBeat.getId())
@@ -106,9 +102,9 @@ public class BeatServiceImpl
     option.setType(type);
     option.setPrice(
         switch (type) {
-          case BASIC -> new BigDecimal("29.99");
-          case PREMIUM -> new BigDecimal("99.99");
-          case EXCLUSIVE -> new BigDecimal("999.99");
+          case BASIC -> PricingConstants.BASIC_LICENSE_PRICE;
+          case PREMIUM -> PricingConstants.PREMIUM_LICENSE_PRICE;
+          case EXCLUSIVE -> PricingConstants.EXCLUSIVE_LICENSE_PRICE;
           default -> throw new IllegalArgumentException("Type de licence non supporté");
         });
 
@@ -120,19 +116,12 @@ public class BeatServiceImpl
         CreateLicenseRequest.builder()
             .name("Basic License")
             .type(LicenseType.BASIC)
-            .price(new BigDecimal("29.99"))
-            .fileFormat("MP3")
+            .price(PricingConstants.BASIC_LICENSE_PRICE)
+            .fileFormat(PricingConstants.BASIC_LICENSE_FORMAT)
             .rights("Non-exclusive rights")
             .isTagged(true)
-            .contractTerms(
-                """
-                - MP3 file only
-                - Distribution up to 10,000 copies
-                - Must credit producer
-                - For non-profit use only
-                - Audio is tagged with producer tag
-                """)
-            .distributionLimit(10000)
+            .contractTerms(LicenseConstants.BASIC_LICENSE_TERMS)
+            .distributionLimit(PricingConstants.BASIC_LICENSE_DISTRIBUTION_LIMIT)
             .beatId(beat.getId())
             .build();
 
@@ -140,19 +129,12 @@ public class BeatServiceImpl
         CreateLicenseRequest.builder()
             .name("Premium License")
             .type(LicenseType.PREMIUM)
-            .price(new BigDecimal("99.99"))
-            .fileFormat("WAV + MP3")
+            .price(PricingConstants.PREMIUM_LICENSE_PRICE)
+            .fileFormat(PricingConstants.PREMIUM_LICENSE_FORMAT)
             .rights("Non-exclusive premium rights")
             .isTagged(false)
-            .contractTerms(
-                """
-                - WAV + MP3 files
-                - Distribution up to 100,000 copies
-                - Must credit producer
-                - Commercial use allowed
-                - Untagged audio files
-                """)
-            .distributionLimit(100000)
+            .contractTerms(LicenseConstants.PREMIUM_LICENSE_TERMS)
+            .distributionLimit(PricingConstants.PREMIUM_LICENSE_DISTRIBUTION_LIMIT)
             .beatId(beat.getId())
             .build();
 
@@ -160,19 +142,11 @@ public class BeatServiceImpl
         CreateLicenseRequest.builder()
             .name("Exclusive Rights")
             .type(LicenseType.EXCLUSIVE)
-            .price(new BigDecimal("999.99"))
-            .fileFormat("WAV + MP3 + Trackouts")
+            .price(PricingConstants.EXCLUSIVE_LICENSE_PRICE)
+            .fileFormat(PricingConstants.EXCLUSIVE_LICENSE_FORMAT)
             .rights("Full exclusive rights")
             .isTagged(false)
-            .contractTerms(
-                """
-                - WAV + MP3 + Trackout files
-                - Unlimited distribution
-                - Full exclusive rights
-                - Commercial use allowed
-                - Beat will be removed from marketplace
-                - Complete ownership transfer
-                """)
+            .contractTerms(LicenseConstants.EXCLUSIVE_LICENSE_TERMS)
             .distributionLimit(null)
             .beatId(beat.getId())
             .build();

@@ -1,4 +1,4 @@
-package com.WeAre.BeatGenius.api.dto;
+package com.WeAre.BeatGenius.api.dto.generic;
 
 import java.time.LocalDateTime;
 import lombok.Data;

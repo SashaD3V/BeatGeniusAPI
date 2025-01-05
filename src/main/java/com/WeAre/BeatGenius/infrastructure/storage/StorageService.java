@@ -1,9 +1,12 @@
 package com.WeAre.BeatGenius.infrastructure.storage;
 
+import com.WeAre.BeatGenius.domain.validators.AudioValidator;
+import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.UUID;
+import javax.sound.sampled.UnsupportedAudioFileException;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -27,5 +30,11 @@ public class StorageService {
     } catch (Exception e) {
       throw new RuntimeException("Impossible de sauvegarder le fichier. Error: " + e.getMessage());
     }
+  }
+
+  public String validateAndStore(MultipartFile file)
+      throws IOException, UnsupportedAudioFileException {
+    AudioValidator.validateAudioFile(file);
+    return store(file);
   }
 }

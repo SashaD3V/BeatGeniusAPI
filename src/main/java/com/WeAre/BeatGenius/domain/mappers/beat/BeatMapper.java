@@ -4,12 +4,18 @@ import com.WeAre.BeatGenius.api.dto.requests.beat.CreateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.requests.beat.UpdateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.responses.beat.BeatResponse;
 import com.WeAre.BeatGenius.domain.entities.beat.Beat;
+import com.WeAre.BeatGenius.domain.enums.Genre;
+import com.WeAre.BeatGenius.domain.enums.Note;
+import com.WeAre.BeatGenius.domain.enums.Scale;
 import com.WeAre.BeatGenius.domain.mappers.BaseMapper;
 import com.WeAre.BeatGenius.domain.mappers.LicenseMapper;
 import com.WeAre.BeatGenius.domain.mappers.UserMapper;
+import java.time.LocalDateTime;
+import java.util.List;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
+import org.mapstruct.Named;
 
 @Mapper(
     componentModel = "spring",
@@ -55,4 +61,34 @@ public interface BeatMapper
   @Mapping(target = "releaseDate", ignore = true)
   @Mapping(target = "includeForBulkDiscounts", ignore = true)
   void updateEntityFromDto(UpdateBeatRequest request, @MappingTarget Beat beat);
+
+  @Named("createRequestFromParams")
+  default CreateBeatRequest toCreateRequest(
+      String title,
+      Genre genre,
+      String description,
+      String audioUrl, // déjà validé et stocké
+      Integer bpm,
+      Note note,
+      Scale scale,
+      List<String> tags,
+      List<String> moods,
+      List<String> instruments,
+      LocalDateTime releaseDate,
+      Boolean includeForBulkDiscounts) {
+    return CreateBeatRequest.builder()
+        .title(title)
+        .genre(genre)
+        .description(description)
+        .audioUrl(audioUrl)
+        .bpm(bpm)
+        .note(note)
+        .scale(scale)
+        .tags(tags)
+        .moods(moods)
+        .instruments(instruments)
+        .releaseDate(releaseDate)
+        .includeForBulkDiscounts(includeForBulkDiscounts)
+        .build();
+  }
 }

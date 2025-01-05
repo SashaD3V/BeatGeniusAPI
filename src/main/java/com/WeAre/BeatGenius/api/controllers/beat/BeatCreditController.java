@@ -1,6 +1,6 @@
 package com.WeAre.BeatGenius.api.controllers.beat;
 
-import com.WeAre.BeatGenius.api.controllers.BaseController;
+import com.WeAre.BeatGenius.api.controllers.generic.BaseController;
 import com.WeAre.BeatGenius.api.dto.requests.beat.CreateBeatCreditRequest;
 import com.WeAre.BeatGenius.api.dto.requests.beat.UpdateBeatCreditRequest;
 import com.WeAre.BeatGenius.api.dto.responses.beat.BeatCreditResponse;

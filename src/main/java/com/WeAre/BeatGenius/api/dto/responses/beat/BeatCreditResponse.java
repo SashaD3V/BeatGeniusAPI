@@ -1,6 +1,6 @@
 package com.WeAre.BeatGenius.api.dto.responses.beat;
 
-import com.WeAre.BeatGenius.api.dto.BaseDTO;
+import com.WeAre.BeatGenius.api.dto.generic.BaseDTO;
 import com.WeAre.BeatGenius.api.dto.responses.user.UserResponse;
 import com.WeAre.BeatGenius.domain.enums.CreditStatus;
 import io.swagger.v3.oas.annotations.media.Schema;

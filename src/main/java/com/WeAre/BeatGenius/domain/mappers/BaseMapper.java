@@ -1,6 +1,6 @@
 package com.WeAre.BeatGenius.domain.mappers;
 
-import com.WeAre.BeatGenius.api.dto.BaseDTO;
+import com.WeAre.BeatGenius.api.dto.generic.BaseDTO;
 import com.WeAre.BeatGenius.domain.entities.BaseEntity;
 import org.mapstruct.MappingTarget;
 
