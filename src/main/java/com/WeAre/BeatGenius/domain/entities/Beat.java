@@ -81,5 +81,5 @@ public class Beat extends BaseEntity {
 
   @OneToMany(mappedBy = "beat", cascade = CascadeType.ALL, orphanRemoval = true)
   @Builder.Default
-  private List<Collaboration> collaborations = new ArrayList<>();
+  private List<BeatCredit> beatCredits = new ArrayList<>();
 }

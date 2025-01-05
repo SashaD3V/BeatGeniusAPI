@@ -9,48 +9,38 @@ import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
 @Mapper(
-    componentModel = "spring",
-    uses = {UserMapper.class, LicenseMapper.class})
+        componentModel = "spring",
+        uses = {UserMapper.class, LicenseMapper.class, BeatCreditMapper.class})
 public interface BeatMapper
-    extends BaseMapper<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest> {
+        extends BaseMapper<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest> {
 
   @Override
-  @Mapping(source = "createdAt", target = "createdAt") // ajout
-  @Mapping(source = "updatedAt", target = "updatedAt") // ajout
-  @Mapping(source = "version", target = "version") // ajout
   @Mapping(source = "producer", target = "producer")
   @Mapping(source = "licenses", target = "licenses")
-  @Mapping(source = "title", target = "title")
-  @Mapping(source = "audioUrl", target = "audioUrl")
-  @Mapping(source = "description", target = "description")
-  @Mapping(source = "tags", target = "tags")
-  @Mapping(source = "bpm", target = "bpm")
+  @Mapping(source = "beatCredits", target = "beatCredits")
   @Mapping(source = "note", target = "note")
   @Mapping(source = "scale", target = "scale")
-  @Mapping(source = "moods", target = "moods")
-  @Mapping(source = "instruments", target = "instruments")
-  @Mapping(source = "releaseDate", target = "releaseDate")
-  @Mapping(source = "includeForBulkDiscounts", target = "includeForBulkDiscounts")
-  @Mapping(source = "genre", target = "genre")
   BeatResponse toDto(Beat beat);
 
   @Override
+  @Mapping(target = "producer", ignore = true)
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "version", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
-  @Mapping(target = "producer", ignore = true)
-  @Mapping(target = "collaborations", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "beatCredits", ignore = true)
   @Mapping(target = "licenses", ignore = true)
+  @Mapping(source = "note", target = "note")
+  @Mapping(source = "scale", target = "scale")
   Beat toEntity(CreateBeatRequest request);
 
   @Override
   @Mapping(target = "id", ignore = true)
-  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "producer", ignore = true)
   @Mapping(target = "createdAt", ignore = true)
   @Mapping(target = "updatedAt", ignore = true)
-  @Mapping(target = "producer", ignore = true)
-  @Mapping(target = "collaborations", ignore = true)
+  @Mapping(target = "version", ignore = true)
+  @Mapping(target = "beatCredits", ignore = true)
   @Mapping(target = "licenses", ignore = true)
   @Mapping(target = "audioUrl", ignore = true)
   @Mapping(target = "tags", ignore = true)

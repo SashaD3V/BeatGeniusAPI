@@ -33,18 +33,10 @@ public class BeatResponse extends BaseDTO {
   @Schema(description = "BPM (Beats Per Minute)", example = "140")
   private Integer bpm;
 
-  @Schema(
-      description = "Note fondamentale",
-      example = "C",
-      allowableValues = {
-        "C", "C_SHARP", "D", "D_SHARP", "E", "F", "F_SHARP", "G", "G_SHARP", "A", "A_SHARP", "B"
-      })
+  @Schema(description = "Note fondamentale")
   private Note note;
 
-  @Schema(
-      description = "Gamme",
-      example = "MINOR",
-      allowableValues = {"MAJOR", "MINOR"})
+  @Schema(description = "Gamme")
   private Scale scale;
 
   @Schema(description = "Ambiances du beat")
@@ -59,9 +51,12 @@ public class BeatResponse extends BaseDTO {
   @Schema(description = "Éligible aux réductions en lot")
   private Boolean includeForBulkDiscounts;
 
-  @Schema(
-      example = "{\"id\": 1, \"artistName\": \"SashaBRRR\", \"email\": \"producer@example.com\"}")
+  @Schema(description = "Producteur principal")
   private UserResponse producer;
 
+  @Schema(description = "Licences disponibles")
   private List<LicenseResponse> licenses;
+
+  @Schema(description = "Crédits du beat")
+  private List<BeatCreditResponse> beatCredits;
 }

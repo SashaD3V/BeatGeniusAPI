@@ -5,14 +5,17 @@ import com.WeAre.BeatGenius.api.dto.requests.beat.UpdateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseOptionRequest;
 import com.WeAre.BeatGenius.api.dto.responses.beat.BeatResponse;
 import com.WeAre.BeatGenius.domain.entities.Beat;
+import com.WeAre.BeatGenius.domain.entities.BeatCredit;
 import com.WeAre.BeatGenius.domain.entities.License;
 import com.WeAre.BeatGenius.domain.entities.User;
+import com.WeAre.BeatGenius.domain.enums.CreditStatus;
 import com.WeAre.BeatGenius.domain.enums.LicenseType;
 import com.WeAre.BeatGenius.domain.exceptions.ForbiddenException;
 import com.WeAre.BeatGenius.domain.exceptions.ResourceNotFoundException;
 import com.WeAre.BeatGenius.domain.exceptions.UnauthorizedException;
 import com.WeAre.BeatGenius.domain.mappers.BeatMapper;
 import com.WeAre.BeatGenius.domain.repositories.BeatRepository;
+import com.WeAre.BeatGenius.domain.repositories.BeatCreditRepository;
 import com.WeAre.BeatGenius.domain.repositories.UserRepository;
 import com.WeAre.BeatGenius.services.beat.interfaces.BeatService;
 import com.WeAre.BeatGenius.services.generic.impl.BaseServiceImpl;
@@ -35,15 +38,18 @@ public class BeatServiceImpl
 
   private final UserRepository userRepository;
   private final LicenseService licenseService;
+  private final BeatCreditRepository beatCreditRepository; // Ajouter cette ligne
 
   public BeatServiceImpl(
           BeatRepository repository,
           BeatMapper mapper,
           UserRepository userRepository,
-          LicenseService licenseService) {
+          LicenseService licenseService,
+          BeatCreditRepository beatCreditRepository) { // Ajouter ce paramètre)
     super(repository, mapper);
     this.userRepository = userRepository;
     this.licenseService = licenseService;
+    this.beatCreditRepository = beatCreditRepository; // Ajouter cette ligne
   }
 
   @Override
@@ -72,10 +78,21 @@ public class BeatServiceImpl
     savedBeat.getLicenses().add(premiumLicense);
     savedBeat.getLicenses().add(exclusiveLicense);
 
-    // 3. Sauvegarder à nouveau le beat avec ses licences
+    // 3. Ajouter automatiquement le crédit pour le producteur principal
+    BeatCredit mainProducerCredit = new BeatCredit();
+    mainProducerCredit.setBeat(savedBeat);
+    mainProducerCredit.setProducer(producer);
+    mainProducerCredit.setRole("Main Producer");
+    mainProducerCredit.setProfitShare(50.0);
+    mainProducerCredit.setPublishingShare(50.0);
+    mainProducerCredit.setStatus(CreditStatus.ACCEPTED);
+
+    beatCreditRepository.save(mainProducerCredit);
+
+    // 4. Sauvegarder à nouveau le beat avec ses licences et crédits
     repository.save(savedBeat);
 
-    // 4. Rafraîchir et retourner le résultat
+    // 5. Rafraîchir et retourner le résultat
     savedBeat = repository
             .findById(savedBeat.getId())
             .orElseThrow(() -> new ResourceNotFoundException("Beat not found"));
