@@ -1,4 +1,4 @@
-package com.WeAre.BeatGenius.domain.entities;
+package com.WeAre.BeatGenius.domain.entities.generic;
 
 import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.ObjectIdGenerators;

@@ -2,7 +2,7 @@ package com.WeAre.BeatGenius.api.controllers.generic;
 
 import com.WeAre.BeatGenius.api.dto.generic.BaseDTO;
 import com.WeAre.BeatGenius.api.dto.responses.page.PageResponse;
-import com.WeAre.BeatGenius.domain.entities.BaseEntity;
+import com.WeAre.BeatGenius.domain.entities.generic.BaseEntity;
 import com.WeAre.BeatGenius.services.generic.interfaces.BaseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
