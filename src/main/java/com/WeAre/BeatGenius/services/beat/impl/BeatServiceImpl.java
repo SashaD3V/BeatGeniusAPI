@@ -53,33 +53,39 @@ public class BeatServiceImpl
     this.beatCreditRepository = beatCreditRepository;
   }
 
-  @Override
-  @Transactional
-  public BeatResponse create(CreateBeatRequest request) {
+  protected User getCurrentProducer() {
     Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
     UserDetails userDetails = (UserDetails) authentication.getPrincipal();
     Long producerId = ((User) userDetails).getId();
 
-    User producer =
-        userRepository
-            .findById(producerId)
-            .orElseThrow(() -> new ResourceNotFoundException("Producer not found"));
+    return userRepository
+        .findById(producerId)
+        .orElseThrow(() -> new ResourceNotFoundException("Producer not found"));
+  }
 
+  protected Beat createAndSaveBeat(CreateBeatRequest request, User producer) {
     Beat beat = mapper.toEntity(request);
     beat.setProducer(producer);
     Beat savedBeat = repository.save(beat);
     repository.flush();
+    return savedBeat;
+  }
 
-    License basicLicense = createStandardLicense(LicenseType.BASIC, savedBeat);
-    License premiumLicense = createStandardLicense(LicenseType.PREMIUM, savedBeat);
-    License exclusiveLicense = createStandardLicense(LicenseType.EXCLUSIVE, savedBeat);
+  protected void addStandardLicenses(Beat beat) {
+    License basicLicense = createStandardLicense(LicenseType.BASIC, beat);
+    License premiumLicense = createStandardLicense(LicenseType.PREMIUM, beat);
+    License exclusiveLicense = createStandardLicense(LicenseType.EXCLUSIVE, beat);
 
-    savedBeat.getLicenses().add(basicLicense);
-    savedBeat.getLicenses().add(premiumLicense);
-    savedBeat.getLicenses().add(exclusiveLicense);
+    beat.getLicenses().add(basicLicense);
+    beat.getLicenses().add(premiumLicense);
+    beat.getLicenses().add(exclusiveLicense);
 
+    repository.save(beat);
+  }
+
+  protected void addMainProducerCredit(Beat beat, User producer) {
     BeatCredit mainProducerCredit = new BeatCredit();
-    mainProducerCredit.setBeat(savedBeat);
+    mainProducerCredit.setBeat(beat);
     mainProducerCredit.setProducer(producer);
     mainProducerCredit.setRole(CreditConstants.MAIN_PRODUCER_ROLE);
     mainProducerCredit.setProfitShare(CreditConstants.MAIN_PRODUCER_PROFIT_SHARE);
@@ -87,8 +93,24 @@ public class BeatServiceImpl
     mainProducerCredit.setStatus(CreditStatus.ACCEPTED);
 
     beatCreditRepository.save(mainProducerCredit);
-    repository.save(savedBeat);
+  }
 
+  @Override
+  @Transactional
+  public BeatResponse create(CreateBeatRequest request) {
+    // 1. Récupérer le producteur courant
+    User producer = getCurrentProducer();
+
+    // 2. Créer et sauvegarder le beat
+    Beat savedBeat = createAndSaveBeat(request, producer);
+
+    // 3. Ajouter les licences standard
+    addStandardLicenses(savedBeat);
+
+    // 4. Ajouter le crédit du producteur principal
+    addMainProducerCredit(savedBeat, producer);
+
+    // 5. Rafraîchir et retourner le beat
     savedBeat =
         repository
             .findById(savedBeat.getId())
