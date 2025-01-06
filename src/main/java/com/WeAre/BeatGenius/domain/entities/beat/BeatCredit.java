@@ -1,7 +1,7 @@
 package com.WeAre.BeatGenius.domain.entities.beat;
 
-import com.WeAre.BeatGenius.domain.entities.BaseEntity;
 import com.WeAre.BeatGenius.domain.entities.User;
+import com.WeAre.BeatGenius.domain.entities.generic.BaseEntity;
 import com.WeAre.BeatGenius.domain.enums.CreditStatus;
 import jakarta.persistence.*;
 import java.time.LocalDateTime;

@@ -1,7 +1,7 @@
 package com.WeAre.BeatGenius.domain.mappers;
 
 import com.WeAre.BeatGenius.api.dto.generic.BaseDTO;
-import com.WeAre.BeatGenius.domain.entities.BaseEntity;
+import com.WeAre.BeatGenius.domain.entities.generic.BaseEntity;
 import org.mapstruct.MappingTarget;
 
 public interface BaseMapper<E extends BaseEntity, D extends BaseDTO, C, U> {

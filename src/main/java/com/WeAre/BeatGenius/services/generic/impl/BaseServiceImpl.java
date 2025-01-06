@@ -1,7 +1,7 @@
 package com.WeAre.BeatGenius.services.generic.impl;
 
 import com.WeAre.BeatGenius.api.dto.generic.BaseDTO;
-import com.WeAre.BeatGenius.domain.entities.BaseEntity;
+import com.WeAre.BeatGenius.domain.entities.generic.BaseEntity;
 import com.WeAre.BeatGenius.domain.exceptions.ResourceNotFoundException;
 import com.WeAre.BeatGenius.domain.mappers.BaseMapper;
 import com.WeAre.BeatGenius.services.generic.interfaces.BaseService;
