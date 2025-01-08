@@ -17,4 +17,10 @@ public final class AudioConstants {
   // Messages d'erreur
   public static final String ERROR_INVALID_FORMAT = "Le fichier doit être au format MP3 ou WAV";
   public static final String ERROR_INVALID_DURATION = "La durée doit être entre 1 et 5 minutes";
+
+  // Dans AudioConstants.java ajouter :
+  public static final int MIN_BIT_RATE_KBPS = 128; // 128 kbps minimum pour MP3
+  public static final float MIN_SAMPLE_RATE_HZ = 44100; // 44.1 kHz minimum
+  public static final String ERROR_INVALID_QUALITY =
+      "La qualité audio est insuffisante. Le fichier doit être d'au moins 128 kbps pour MP3 ou 44.1 kHz pour WAV";
 }

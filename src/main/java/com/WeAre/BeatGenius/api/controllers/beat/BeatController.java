@@ -37,6 +37,7 @@ import org.springframework.web.multipart.MultipartFile;
 @RequestMapping("/api/v1/beats")
 public class BeatController
     extends BaseController<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest> {
+
   private final BeatService beatService;
   private final StorageService storageService;
   private final BeatMapper beatMapper;
@@ -53,12 +54,7 @@ public class BeatController
   @Operation(
       summary = "Créer un nouveau beat",
       description =
-          """
-            Upload d'une nouvelle instrumentale.
-
-            Formats acceptés : MP3, WAV
-            Durée : minimum 1 minute, maximum 5 minutes
-            """)
+          "Upload d'une nouvelle instrumentale.\n\nFormats acceptés : MP3, WAV\nDurée : minimum 1 minute, maximum 5 minutes")
   @io.swagger.v3.oas.annotations.parameters.RequestBody(
       content = @Content(mediaType = MediaType.MULTIPART_FORM_DATA_VALUE))
   @ApiResponses(
@@ -103,11 +99,8 @@ public class BeatController
           MultipartFile audioFile)
       throws IOException, UnsupportedAudioFileException {
 
-    // Validation du fichier audio
     AudioValidator.validateAudioFile(audioFile);
     String audioUrl = storageService.store(audioFile);
-
-    // Validation et conversion de la date de sortie
     LocalDateTime releaseDate = DateValidator.validateAndConvertReleaseDate(releaseDateStr);
 
     CreateBeatRequest createDto =
@@ -169,17 +162,7 @@ public class BeatController
   @Operation(
       summary = "Obtenir les beats d'un producteur",
       description =
-          """
-            Récupère les beats d'un producteur avec pagination et tri.
-
-            Options de tri disponibles :
-            - title,asc/desc (Tri par titre)
-            - createdAt,asc/desc (Tri par date de création)
-            - price,asc/desc (Tri par prix)
-            - genre,asc/desc (Tri par genre)
-
-            Exemple : /api/v1/beats/producer/5?page=0&size=10&sort=createdAt,desc
-            """)
+          "Récupère les beats d'un producteur avec pagination et tri.\n\nOptions de tri disponibles :\n- title,asc/desc (Tri par titre)\n- createdAt,asc/desc (Tri par date de création)\n- price,asc/desc (Tri par prix)\n- genre,asc/desc (Tri par genre)\n\nExemple : /api/v1/beats/producer/5?page=0&size=10&sort=createdAt,desc")
   public ResponseEntity<PageResponse<BeatResponse>> getProducerBeats(
       @PathVariable Long producerId,
       @RequestParam(defaultValue = "0") @Parameter(description = "Numéro de la page") int page,

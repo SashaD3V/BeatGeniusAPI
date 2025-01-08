@@ -19,6 +19,7 @@ public class AudioValidator {
       throws IOException, UnsupportedAudioFileException {
     validateMimeType(file);
     validateDuration(file);
+    validateAudioQuality(file); // Ajout de l'appel
   }
 
   private static void validateMimeType(MultipartFile file) {
@@ -42,4 +43,45 @@ public class AudioValidator {
       }
     }
   }
-}
+
+  private static void validateAudioQuality(MultipartFile file)
+      throws IOException, UnsupportedAudioFileException {
+    try (AudioInputStream audioInputStream =
+        AudioSystem.getAudioInputStream(new ByteArrayInputStream(file.getBytes()))) {
+
+      AudioFormat format = audioInputStream.getFormat();
+
+      if (AudioConstants.MIME_TYPE_MP3.equals(file.getContentType())) {
+        // Pour MP3, vérifier le bitrate
+        float bitRate = calculateMp3BitRate(file.getBytes(), format);
+        if (bitRate < AudioConstants.MIN_BIT_RATE_KBPS) {
+          throw new InvalidFileException(AudioConstants.ERROR_INVALID_QUALITY);
+        }
+      } else if (AudioConstants.MIME_TYPE_WAV.equals(file.getContentType())) {
+        // Pour WAV, vérifier la fréquence d'échantillonnage
+        if (format.getSampleRate() < AudioConstants.MIN_SAMPLE_RATE_HZ) {
+          throw new InvalidFileException(AudioConstants.ERROR_INVALID_QUALITY);
+        }
+      }
+    }
+  }
+
+  private static float calculateMp3BitRate(byte[] fileData, AudioFormat format) {
+    try (AudioInputStream audioInputStream =
+                 AudioSystem.getAudioInputStream(new ByteArrayInputStream(fileData))) {
+      // On obtient la durée en secondes
+      float durationInSeconds = audioInputStream.getFrameLength() / format.getFrameRate();
+
+      // Pour un MP3 stéréo
+      if (format.getChannels() == 2 && format.getSampleRate() >= 44100) {
+        // Si c'est du stéréo haute qualité, on considère que c'est au moins 128 kbps
+        return 192.0f;
+      } else {
+        // Sinon on considère que c'est de la basse qualité
+        return 64.0f;
+      }
+    } catch (UnsupportedAudioFileException | IOException e) {
+      throw new InvalidFileException(AudioConstants.ERROR_INVALID_QUALITY);
+    }
+  }
+  }
