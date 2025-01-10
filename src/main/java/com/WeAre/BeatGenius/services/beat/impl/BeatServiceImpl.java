@@ -2,10 +2,8 @@ package com.WeAre.BeatGenius.services.beat.impl;
 
 import com.WeAre.BeatGenius.api.dto.requests.beat.CreateBeatRequest;
 import com.WeAre.BeatGenius.api.dto.requests.beat.UpdateBeatRequest;
-import com.WeAre.BeatGenius.api.dto.requests.marketplace.CreateLicenseOptionRequest;
 import com.WeAre.BeatGenius.api.dto.responses.beat.BeatResponse;
 import com.WeAre.BeatGenius.domain.constants.CreditConstants;
-import com.WeAre.BeatGenius.domain.constants.PricingConstants;
 import com.WeAre.BeatGenius.domain.entities.License;
 import com.WeAre.BeatGenius.domain.entities.User;
 import com.WeAre.BeatGenius.domain.entities.beat.Beat;
@@ -32,8 +30,9 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
-public class BeatServiceImpl extends BaseServiceImpl<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest>
-        implements BeatService {
+public class BeatServiceImpl
+    extends BaseServiceImpl<Beat, BeatResponse, CreateBeatRequest, UpdateBeatRequest>
+    implements BeatService {
 
   private final UserRepository userRepository;
   private final LicenseService licenseService;
@@ -41,12 +40,12 @@ public class BeatServiceImpl extends BaseServiceImpl<Beat, BeatResponse, CreateB
   private final LicenseTemplateService licenseTemplateService;
 
   public BeatServiceImpl(
-          BeatRepository repository,
-          BeatMapper mapper,
-          UserRepository userRepository,
-          LicenseService licenseService,
-          BeatCreditRepository beatCreditRepository,
-          LicenseTemplateService licenseTemplateService) {
+      BeatRepository repository,
+      BeatMapper mapper,
+      UserRepository userRepository,
+      LicenseService licenseService,
+      BeatCreditRepository beatCreditRepository,
+      LicenseTemplateService licenseTemplateService) {
     super(repository, mapper);
     this.userRepository = userRepository;
     this.licenseService = licenseService;
@@ -60,8 +59,8 @@ public class BeatServiceImpl extends BaseServiceImpl<Beat, BeatResponse, CreateB
     Long producerId = ((User) userDetails).getId();
 
     return userRepository
-            .findById(producerId)
-            .orElseThrow(() -> new ResourceNotFoundException("Producer not found"));
+        .findById(producerId)
+        .orElseThrow(() -> new ResourceNotFoundException("Producer not found"));
   }
 
   protected Beat createAndSaveBeat(CreateBeatRequest request, User producer) {
@@ -101,7 +100,8 @@ public class BeatServiceImpl extends BaseServiceImpl<Beat, BeatResponse, CreateB
     addStandardLicenses(savedBeat);
     addMainProducerCredit(savedBeat, producer);
 
-    savedBeat = repository
+    savedBeat =
+        repository
             .findById(savedBeat.getId())
             .orElseThrow(() -> new ResourceNotFoundException("Beat not found"));
 
@@ -111,7 +111,8 @@ public class BeatServiceImpl extends BaseServiceImpl<Beat, BeatResponse, CreateB
   @Override
   @Transactional
   public BeatResponse update(Long id, UpdateBeatRequest request) {
-    Beat existingBeat = repository
+    Beat existingBeat =
+        repository
             .findById(id)
             .orElseThrow(() -> new ResourceNotFoundException("Beat not found with id: " + id));
 
@@ -132,9 +133,8 @@ public class BeatServiceImpl extends BaseServiceImpl<Beat, BeatResponse, CreateB
     }
 
     User currentUser = (User) authentication.getPrincipal();
-    Beat beat = repository
-            .findById(id)
-            .orElseThrow(() -> new ResourceNotFoundException("Beat not found"));
+    Beat beat =
+        repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Beat not found"));
 
     if (!beat.getProducer().getId().equals(currentUser.getId())) {
       throw new ForbiddenException("Vous n'êtes pas autorisé à supprimer ce beat");

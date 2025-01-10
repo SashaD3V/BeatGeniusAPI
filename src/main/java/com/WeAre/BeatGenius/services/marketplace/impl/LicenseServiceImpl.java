@@ -17,8 +17,9 @@ import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LicenseServiceImpl extends BaseServiceImpl<License, LicenseResponse, CreateLicenseRequest, UpdateLicenseRequest>
-        implements LicenseService {
+public class LicenseServiceImpl
+    extends BaseServiceImpl<License, LicenseResponse, CreateLicenseRequest, UpdateLicenseRequest>
+    implements LicenseService {
 
   private final LicenseMapper licenseMapper;
   private final BeatRepository beatRepository;
@@ -26,10 +27,10 @@ public class LicenseServiceImpl extends BaseServiceImpl<License, LicenseResponse
   private final LicenseTemplateService licenseTemplateService;
 
   public LicenseServiceImpl(
-          LicenseRepository licenseRepository,
-          LicenseMapper licenseMapper,
-          BeatRepository beatRepository,
-          LicenseTemplateService licenseTemplateService) {
+      LicenseRepository licenseRepository,
+      LicenseMapper licenseMapper,
+      BeatRepository beatRepository,
+      LicenseTemplateService licenseTemplateService) {
     super(licenseRepository, licenseMapper);
     this.licenseMapper = licenseMapper;
     this.beatRepository = beatRepository;
@@ -49,9 +50,9 @@ public class LicenseServiceImpl extends BaseServiceImpl<License, LicenseResponse
   public License createLicense(CreateLicenseRequest request) {
     License license = licenseMapper.toEntity(request);
     license.setBeat(
-            beatRepository
-                    .findById(request.getBeatId())
-                    .orElseThrow(() -> new EntityNotFoundException("Beat not found")));
+        beatRepository
+            .findById(request.getBeatId())
+            .orElseThrow(() -> new EntityNotFoundException("Beat not found")));
     return licenseRepository.save(license);
   }
 
@@ -59,9 +60,9 @@ public class LicenseServiceImpl extends BaseServiceImpl<License, LicenseResponse
   @Transactional
   public License updateLicense(Long id, UpdateLicenseRequest request) {
     License license =
-            licenseRepository
-                    .findById(id)
-                    .orElseThrow(() -> new EntityNotFoundException("License not found"));
+        licenseRepository
+            .findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("License not found"));
 
     if (request.getType() != null) {
       license.setType(request.getType());
@@ -88,7 +89,7 @@ public class LicenseServiceImpl extends BaseServiceImpl<License, LicenseResponse
   @Override
   public License getLicense(Long id) {
     return licenseRepository
-            .findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("License not found"));
+        .findById(id)
+        .orElseThrow(() -> new EntityNotFoundException("License not found"));
   }
 }

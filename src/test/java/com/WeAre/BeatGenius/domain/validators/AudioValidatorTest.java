@@ -140,8 +140,8 @@ class AudioValidatorTest {
         when(mockAudioStream.getFormat()).thenReturn(format);
         when(mockAudioStream.getFrameLength()).thenReturn(44100L * 120);
         mockedAudioSystem
-                .when(() -> AudioSystem.getAudioInputStream(any(ByteArrayInputStream.class)))
-                .thenReturn(mockAudioStream);
+            .when(() -> AudioSystem.getAudioInputStream(any(ByteArrayInputStream.class)))
+            .thenReturn(mockAudioStream);
 
         assertDoesNotThrow(() -> AudioValidator.validateAudioFile(mockFile));
       }
@@ -163,12 +163,12 @@ class AudioValidatorTest {
         // Frames pour 120 secondes à 22050 Hz
         when(mockAudioStream.getFrameLength()).thenReturn(22050L * 120);
         mockedAudioSystem
-                .when(() -> AudioSystem.getAudioInputStream(any(ByteArrayInputStream.class)))
-                .thenReturn(mockAudioStream);
+            .when(() -> AudioSystem.getAudioInputStream(any(ByteArrayInputStream.class)))
+            .thenReturn(mockAudioStream);
 
         InvalidFileException exception =
-                assertThrows(InvalidFileException.class,
-                        () -> AudioValidator.validateAudioFile(mockFile));
+            assertThrows(
+                InvalidFileException.class, () -> AudioValidator.validateAudioFile(mockFile));
 
         assertEquals(AudioConstants.ERROR_INVALID_QUALITY, exception.getMessage());
       }
@@ -184,8 +184,8 @@ class AudioValidatorTest {
         when(mockAudioStream.getFormat()).thenReturn(format);
         when(mockAudioStream.getFrameLength()).thenReturn(44100L * 120);
         mockedAudioSystem
-                .when(() -> AudioSystem.getAudioInputStream(any(ByteArrayInputStream.class)))
-                .thenReturn(mockAudioStream);
+            .when(() -> AudioSystem.getAudioInputStream(any(ByteArrayInputStream.class)))
+            .thenReturn(mockAudioStream);
 
         assertDoesNotThrow(() -> AudioValidator.validateAudioFile(mockFile));
       }
@@ -201,12 +201,12 @@ class AudioValidatorTest {
         when(mockAudioStream.getFormat()).thenReturn(format);
         when(mockAudioStream.getFrameLength()).thenReturn(22050L * 120);
         mockedAudioSystem
-                .when(() -> AudioSystem.getAudioInputStream(any(ByteArrayInputStream.class)))
-                .thenReturn(mockAudioStream);
+            .when(() -> AudioSystem.getAudioInputStream(any(ByteArrayInputStream.class)))
+            .thenReturn(mockAudioStream);
 
         InvalidFileException exception =
-                assertThrows(InvalidFileException.class,
-                        () -> AudioValidator.validateAudioFile(mockFile));
+            assertThrows(
+                InvalidFileException.class, () -> AudioValidator.validateAudioFile(mockFile));
 
         assertEquals(AudioConstants.ERROR_INVALID_QUALITY, exception.getMessage());
       }

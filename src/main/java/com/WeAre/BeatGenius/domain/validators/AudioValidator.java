@@ -68,7 +68,7 @@ public class AudioValidator {
 
   private static float calculateMp3BitRate(byte[] fileData, AudioFormat format) {
     try (AudioInputStream audioInputStream =
-                 AudioSystem.getAudioInputStream(new ByteArrayInputStream(fileData))) {
+        AudioSystem.getAudioInputStream(new ByteArrayInputStream(fileData))) {
       // On obtient la durée en secondes
       float durationInSeconds = audioInputStream.getFrameLength() / format.getFrameRate();
 
@@ -84,4 +84,4 @@ public class AudioValidator {
       throw new InvalidFileException(AudioConstants.ERROR_INVALID_QUALITY);
     }
   }
-  }
+}

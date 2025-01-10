@@ -5,5 +5,5 @@ import com.WeAre.BeatGenius.domain.entities.beat.Beat;
 import com.WeAre.BeatGenius.domain.enums.LicenseType;
 
 public interface LicenseTemplateService {
-    License createLicenseFromTemplate(LicenseType type, Beat beat);
+  License createLicenseFromTemplate(LicenseType type, Beat beat);
 }
