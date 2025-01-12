@@ -8,6 +8,20 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 
+/*
+@Mapper(
+    componentModel = "spring",
+    nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL
+)
+*/
+
+/*
+La configuration nullValueMappingStrategy = NullValueMappingStrategy.RETURN_NULL définit comment MapStruct doit gérer les valeurs null pendant le mapping.
+Voici les différentes stratégies possibles :
+
+RETURN_NULL : Si la source est null, la cible sera null
+RETURN_DEFAULT : Si la source est null, la cible prendra une valeur par défaut (0 pour les nombres, false pour les booléens, etc.)
+*/
 @Mapper(componentModel = "spring")
 public interface LicenseMapper
     extends BaseMapper<License, LicenseResponse, CreateLicenseRequest, UpdateLicenseRequest> {

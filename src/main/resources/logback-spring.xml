@@ -1,30 +1,57 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration>
-    <!-- Console Appender -->
-    <appender name="Console" class="ch.qos.logback.core.ConsoleAppender">
+    <!-- Configuration de base existante -->
+    <property name="PATTERN" value="%d{HH:mm:ss.SSS} [%thread] [%X{requestId}] [%X{method}] [%X{uri}] %highlight(%-5level) %blue([%logger{36}]) - %msg%n"/>
+
+    <appender name="CONSOLE" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
-            <pattern>%d{HH:mm:ss.SSS} [%thread] [%X{requestId}] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${PATTERN}</pattern>
         </encoder>
     </appender>
 
-    <!-- File Appender -->
-    <appender name="File" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <file>logs/beatgenius.log</file>
+    <appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/app.log</file>
         <encoder>
-            <pattern>%d{yyyy-MM-dd HH:mm:ss.SSS} [%thread] [%X{requestId}] %-5level %logger{36} - %msg%n</pattern>
+            <pattern>${PATTERN}</pattern>
         </encoder>
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>logs/beatgenius-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <fileNamePattern>logs/app-%d{yyyy-MM-dd}.log</fileNamePattern>
             <maxHistory>30</maxHistory>
         </rollingPolicy>
     </appender>
 
-    <!-- Root Logger -->
+    <appender name="SQL_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>logs/sql.log</file>
+        <encoder>
+            <pattern>${PATTERN}</pattern>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>logs/sql-%d{yyyy-MM-dd}.log</fileNamePattern>
+            <maxHistory>30</maxHistory>
+        </rollingPolicy>
+    </appender>
+
+    <!-- Améliorations -->
+    <logger name="org.hibernate.SQL" level="DEBUG" additivity="false">
+        <appender-ref ref="SQL_FILE"/>
+    </logger>
+
+    <!-- Configuration spécifique pour les mappers -->
+    <logger name="com.WeAre.BeatGenius.domain.mappers" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
+    <!-- Configuration spécifique pour les services -->
+    <logger name="com.WeAre.BeatGenius.services" level="DEBUG" additivity="false">
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
+    </logger>
+
     <root level="INFO">
-        <appender-ref ref="Console" />
-        <appender-ref ref="File" />
+        <appender-ref ref="CONSOLE"/>
+        <appender-ref ref="FILE"/>
     </root>
 
-    <!-- Application Logger -->
-    <logger name="com.WeAre.BeatGenius" level="DEBUG" />
+    <logger name="com.WeAre.BeatGenius" level="DEBUG"/>
 </configuration>

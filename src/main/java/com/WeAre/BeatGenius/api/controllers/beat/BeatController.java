@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -41,6 +43,7 @@ public class BeatController
   private final BeatService beatService;
   private final StorageService storageService;
   private final BeatMapper beatMapper;
+  private static final Logger log = LoggerFactory.getLogger(BeatController.class);
 
   public BeatController(BeatService service, StorageService storageService, BeatMapper beatMapper) {
     super(service);
@@ -117,6 +120,8 @@ public class BeatController
             instruments,
             releaseDate,
             includeForBulkDiscounts);
+
+    log.debug("CreateBeatRequest créé : {}", createDto); // Ajoutez cette ligne ici
 
     return super.create(createDto);
   }
